@@ -35,7 +35,7 @@ class CarribeanStud:
         return [self.deck.draw_card() for _ in range(number_of_cards)]
     
     def does_dealer_qualify(self):
-        return self.dealer_hand.hand_rank_value>=2 or (14 in self.dealer_hand.ranks and 13 in self.dealer_hand.ranks)
+        return self.dealer_hand.hand_rank_value >= 2 or (14 in self.dealer_hand.ranks and 13 in self.dealer_hand.ranks)
     
     def does_player_raise_optimal(self): 
         pass # wip
@@ -47,9 +47,9 @@ class CarribeanStud:
         if 14 in self.player_hand.ranks and 13 in self.player_hand.ranks: #player has A-K
             if self.dealer_up_card_rank in self.player_hand.ranks:
                 return True
-            elif self.dealer_up_card_rank in [14, 13] and (12 in self.player_hand.ranks or 11 in self.player_hand.ranks):
+            if self.dealer_up_card_rank in [14, 13] and (12 in self.player_hand.ranks or 11 in self.player_hand.ranks):
                 return True
-            elif 12 in self.player_hand.ranks and self.dealer_up_card_rank < self.player_hand.ranks[3]:
+            if 12 in self.player_hand.ranks and self.dealer_up_card_rank < self.player_hand.ranks[3]:
                 return True
             
         return False
@@ -71,7 +71,7 @@ class CarribeanStud:
             return 0.0
         
         if not self.does_dealer_qualify():
-            return 2 * self.ante
+            return 2 * self.ante + self.raise_bet
         
         if self.does_player_win():
             return 2 * self.ante + self.raise_bet * self.raise_pay_table[self.player_hand.hand_rank] + self.raise_bet
@@ -82,22 +82,32 @@ class CarribeanStud:
         # return amount_bet, amount_won
         return self.amount_bet(), self.amount_won()
         
-count = 1
 
-while True:
-    game = CarribeanStud()
+if __name__ == "__main__":
 
-    if game.does_dealer_qualify() and game.player_hand.hand_rank_value == 8:
+    num_hands = 2000000
 
-        print(game.player_hand)
-        print(game.dealer_hand)
+    amount_bet = 0
 
-        print(game.does_dealer_qualify())
+    amount_won = 0
 
-        print(game.game_results())
 
-        print(count)
+    data = []
+    file_count = 1
 
-        break
+    for iter in range(1, num_hands+1):
+        game = CarribeanStud()
+    
+        amount_bet_game, amount_won_game = game.game_results()
 
-    count += 1
+        amount_bet += amount_bet_game
+        amount_won += amount_won_game
+        
+        if iter % 100000 == 0:
+            print(iter, ' ', amount_bet, ' ', amount_won, ' ', 1-amount_won/amount_bet, (amount_bet-amount_won)/iter)
+        #print(game.dealer_hand, ' ', game.player_hand, ' ', game.amount_bet(), ' ', game.amount_won())
+       
+
+    
+
+    print(num_hands, ' ', amount_bet, ' ', amount_won, ' ', 1-amount_won/amount_bet, (amount_bet-amount_won)/num_hands)

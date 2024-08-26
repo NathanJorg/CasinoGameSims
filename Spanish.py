@@ -40,7 +40,10 @@ class SpanishBlackjack():
                 num_aces -= 1
 
         return value, num_aces > 0
-    
+
+    def hit(self, hand):
+        hand.append(self.deck.draw_card())
+      
     def check_blackjack(self, hand):
         return (self.hand_value(hand)[0] == 21 and len(hand) == 2)
 

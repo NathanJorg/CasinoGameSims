@@ -178,3 +178,7 @@ class Blackjack():
         self.optimal_strategy()
         self.dealer_play()
         self.determine_winner()  
+
+game = Blackjack()
+game.play()
+print(game.amount_won())

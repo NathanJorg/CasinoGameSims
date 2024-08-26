@@ -6,8 +6,6 @@ import os
 import numpy as np
 import pandas as pd
 
-import duckdb
-
 
 MAX_HANDS = 2
 
@@ -35,16 +33,7 @@ def write_to_file(data, filename):
         os.makedirs(directory)
    
     with open(filename, 'w', encoding='utf-8') as f:
-        f.write(df.to_string(index=False))
-
-    # df_duck = pd.to_numeric(df['Dealer_value'], errors='coerce')
-    # df_duck = df_duck.dropna()
-
-    # print(df_duck)
-
-    # lineitem = duckdb.query("SELECT * FROM df_duck WHERE Dealer_value>21")
-    # print(lineitem)
-    
+        f.write(df.to_string(index=False))  
 
 data = []
 file_count = 1
