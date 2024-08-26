@@ -54,6 +54,9 @@ class CarribeanStud:
             
         return False
     
+    def does_player_fold(self):
+        return not self.does_player_raise_basic()
+
     def does_player_win(self):
         if self.player_hand.hand_rank_value > self.dealer_hand.hand_rank_value:
             return True
@@ -67,7 +70,7 @@ class CarribeanStud:
         return self.ante + self.raise_bet if self.does_player_raise_basic() else self.ante
 
     def amount_won(self):
-        if not self.does_player_raise_basic():
+        if self.does_player_fold():
             return 0.0
         
         if not self.does_dealer_qualify():
