@@ -25,8 +25,8 @@ class PokerHand:
         self.hand = hand
 
     def __str__(self):
-        _hand_string = ", ".join(map(str, self.hand))
-        return _hand_string
+        hand_string = ", ".join(map(str, self.hand))
+        return hand_string
     
     @property
     def ranks(self):
@@ -123,31 +123,46 @@ class PokerHand:
                     _best_hand = _current_hand
 
         return _best_hand
+
+
+class ThreeCardHand(PokerHand):
+    hand_rankings = {
+        "Straight Flush": 6,
+        "Three of a Kind": 5,
+        "Straight": 4,
+        "Flush": 3,
+        "One Pair": 2,
+        "High Card": 1
+    }
+
+    @property
+    def ranks(self):
+        sorted_list = sorted([self.rank_values[card.rank] for card in self.hand], reverse=True)
+
+        frequency = Counter(sorted_list)
+
+        result = sorted(sorted_list, key=lambda x: (-frequency[x], -x))
+
+        # Handle the low-Ace straight case
+        if result == [14, 3, 2]:
+            result = [3, 2, 1]  # Treat Ace as '1'    
+        
+        return result
     
-class PokerGame:
-    def __init__(self) -> None:
-        self.deck = Deck()
-        self.deck.shuffle()
-
-        self.player_hand = PokerHand(self.draw_cards(number_of_cards=7))
-        self.dealer_hand = PokerHand(self.draw_cards(number_of_cards=7))
-
-    def draw_cards(self, number_of_cards):
-        return [self.deck.draw_card() for _ in range(number_of_cards)]
-
-
-if __name__ == "__main__":
-
-    count=1
-    while True:
-        game = PokerGame()
-        best_hand = game.player_hand.find_best_hand()
-
-        if best_hand.hand_rank == "One Pair":
-            print(best_hand)
-            print(game.player_hand.ranks)
-            print(count)
-            break
-        count += 1
-
-    #print(game.player_hand.sorted_ranks)
+    def is_straight(self):
+        return self.ranks == list(range(self.ranks[0], self.ranks[0] - 3, -1))
+    
+    def evaluate_hand(self):
+        if self.is_straight_flush():
+            return "Straight Flush"
+        if self.is_three_of_a_kind():
+            return "Three of a Kind"
+        if self.is_straight():
+            return "Straight"
+        if self.is_flush():
+            return "Flush"
+        if self.is_one_pair():
+            return "One Pair"
+        
+        return "High Card"
+    
