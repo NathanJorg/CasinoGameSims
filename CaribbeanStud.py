@@ -66,6 +66,9 @@ class CarribeanStud:
 
         return False
     
+    def does_player_tie(self):
+        return self.player_hand.hand_rank_value == self.player_hand.hand_rank_value and self.player_hand.ranks == self.dealer_hand.ranks
+    
     def amount_bet(self):
         return self.ante + self.raise_bet if self.does_player_raise_basic() else self.ante
 
@@ -78,6 +81,10 @@ class CarribeanStud:
         
         if self.does_player_win():
             return 2 * self.ante + self.raise_bet * self.raise_pay_table[self.player_hand.hand_rank] + self.raise_bet
+        
+        if self.does_player_tie():
+            print("tie")
+            return self.ante + self.raise_bet
     
         return 0.0
         
