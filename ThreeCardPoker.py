@@ -6,7 +6,6 @@ from pathlib import Path
 import os
 import pandas as pd
 
-
 class ThreeCardPoker:
     ante_bonus_paytable = {
         "Straight Flush": 5,
@@ -27,16 +26,15 @@ class ThreeCardPoker:
     def draw_cards(self, number_of_cards):
         return [self.deck.draw_card() for _ in range(number_of_cards)]
     
-    def does_dealer_qualify(self):
+    def dealer_qualifies(self):
         return self.dealer_hand.hand_rank_value >= 2 or any(rank in self.dealer_hand.ranks for rank in [12, 13, 14])
 
-    def does_player_play(self):
-        if self.player_hand.hand_rank_value >= 2:
-            return True
-                
+    def player_pair_or_greater(self):
+        return self.player_hand.hand_rank_value >= 2
+    
+    def hand_greater_than_q_6_4(self):
         if any(rank in self.player_hand.ranks for rank in [13, 14]): 
             return True
-        
         if 12 in self.player_hand.ranks:            
             if self.player_hand.ranks[1] > 6:                
                 return True
@@ -44,11 +42,20 @@ class ThreeCardPoker:
                 return True 
             return False          
         return False
+
+    def does_player_play(self):
+        if self.player_pair_or_greater():
+            return True
+        
+        if self.hand_greater_than_q_6_4():
+            return True               
+         
+        return False
     
-    def does_player_fold(self):
+    def player_folds(self):
         return not self.does_player_play()
 
-    def does_player_win(self):
+    def player_wins(self):
         if self.player_hand.hand_rank_value > self.dealer_hand.hand_rank_value:
             return True
         
@@ -57,7 +64,7 @@ class ThreeCardPoker:
 
         return False
     
-    def does_player_tie(self):
+    def player_ties(self):
         return self.player_hand.hand_rank_value == self.player_hand.hand_rank_value and self.player_hand.ranks == self.dealer_hand.ranks
 
     def ante_bonus_pay(self):
@@ -67,16 +74,16 @@ class ThreeCardPoker:
         return self.ante_bet + self.play_bet if self.does_player_play() else self.ante_bet
     
     def amount_won(self):
-        if self.does_player_fold():
+        if self.player_folds():
             return 0.0
         
-        if not self.does_dealer_qualify():
+        if not self.dealer_qualifies():
             return 2 * self.ante_bet + self.play_bet + self.ante_bonus_pay()       
         
-        if self.does_player_win():
+        if self.player_wins():
             return 2 * self.ante_bet + 2 * self.play_bet + self.ante_bonus_pay()
         
-        if self.does_player_tie():
+        if self.player_ties():
             return self.ante_bet + self.play_bet + self.ante_bonus_pay()
             
         return 0.0 + self.ante_bonus_pay()
@@ -127,7 +134,7 @@ def main():
             'Player hand': game.player_hand,
             'Dealer hand': game.dealer_hand,
             'Player rank': game.player_hand.hand_rank,
-            'Dealer rank': None if not game.does_dealer_qualify() else game.dealer_hand.hand_rank,
+            'Dealer rank': None if not game.dealer_qualifies() else game.dealer_hand.hand_rank,
             'Player hand rank': game.player_hand.hand_rank_value,
             'Dealer hand rank': game.dealer_hand.hand_rank_value,
             'Amount bet': amount_bet_game,
