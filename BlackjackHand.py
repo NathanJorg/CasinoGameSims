@@ -6,10 +6,11 @@ class BlackjackHand:
         self.hand = hand if hand else []
         self.wagered_amount = 1.0
         self.amount_won = 0.0
+        self._has_doubled = False
         self.update_hand_value()
 
     def __str__(self):
-        hand_string = ", ".join(map(str, self.hand))
+        hand_string = ",".join(map(str, self.hand))
         return hand_string    
     
     def add_card(self, card):
@@ -30,6 +31,9 @@ class BlackjackHand:
 
         self._num_aces_left = num_aces
         self._hand_value = value
+
+    def mark_doubled(self):
+        self._has_doubled = True
         
     @property
     def hand_value(self):
@@ -78,4 +82,4 @@ class BlackjackHand:
     
     @property
     def has_doubled(self):
-        return self.wagered_amount == 2.0
+        return self._has_doubled

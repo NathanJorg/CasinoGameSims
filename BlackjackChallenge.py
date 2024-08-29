@@ -1,35 +1,30 @@
 from Cards import Deck
 from BlackjackHand import BlackjackHand
 
+import pandas as pd
+import numpy as np
+import os
+
+from pathlib import Path
+
 class BlackjackChallenge():
 
-    def __init__(self, num_decks=6, max_hands=3):
+    def __init__(self, num_decks=6, max_hands=3) -> None: 
         self.deck = Deck(num_decks)
         self.deck.shuffle()
         
-        # game attributes
         self.max_hands = max_hands
-
-        #game initialisation
-        self.game_win = 0.0
 
         self.player_hands = [BlackjackHand(self.draw_card(number_of_cards=2))]
         self.dealer_hand = BlackjackHand(self.draw_card(number_of_cards=2))
 
-    def print_hand(self, hand):
-        hand_str = ", ".join(map(str, hand))
-        return hand_str
-    
     def draw_card(self, number_of_cards=1):
-        return [self.deck.draw_card() for _ in range(number_of_cards)]
+        cards = [self.deck.draw_card() for _ in range(number_of_cards)]
+        return cards if number_of_cards > 1 else cards[0]
       
     @property
     def dealer_first_card_rank(self):
         return self.dealer_hand.card_ranks[0]
-    
-    @property
-    def money_on_table(self):
-        return sum(hand.wagered_amount for hand in self.player_hands)
     
     def blackjack_pays(self, hand: BlackjackHand):
         if not self.dealer_hand.is_hand_blackjack:
@@ -62,11 +57,8 @@ class BlackjackChallenge():
         while self.dealer_hand.hand_value < 17:
             self.dealer_hand.add_card(self.draw_card())
 
-    def can_split(self, hand: BlackjackHand):        
-        return hand.can_split
-    
     def does_player_split(self, hand: BlackjackHand):
-        if not self.can_split(hand):
+        if not hand.can_split:
             return False
         
         card_rank = hand.card_ranks[0]
@@ -166,7 +158,7 @@ class BlackjackChallenge():
         
         return False
             
-    def split_player_hand(self, hand: BlackjackHand):
+    def split_player_hand(self, hand: BlackjackHand) -> None:
         new_hand = BlackjackHand([hand.hand.pop()])
         hand.add_card(self.draw_card())
         new_hand.add_card(self.draw_card())
@@ -174,6 +166,7 @@ class BlackjackChallenge():
     
     def double_down(self, hand: BlackjackHand):
         hand.wagered_amount *= 2
+        hand.mark_doubled()
         hand.add_card(self.draw_card())
     
     def optimal_strategy(self, hand: BlackjackHand):
@@ -208,9 +201,7 @@ class BlackjackChallenge():
     def amount_not_auto_resolved(self):       
         return sum(hand.wagered_amount for hand in self.player_hands if not self.is_hand_auto_resolved(hand))
 
-
     def win(self):
-        
         unresolved_amount = self.amount_not_auto_resolved()
 
         for hand in self.player_hands:
@@ -237,10 +228,43 @@ class BlackjackChallenge():
 
 if __name__ == "__main__":
 
-    num_hands = 1000000
-
-    amount_won = 0
+    num_hands = 10000000
     amount_bet = 0
+    amount_won = 0
+
+    player_header = []
+
+    for hand in range(3):
+        player_header.append('Hand_%s' % str(hand+1))
+        player_header.append('Hand_value_%s' % str(hand+1))
+
+    headers = ['Hand'] + player_header + ['Dealer_hand'] + ['Dealer_value'] + ['Bet_amount'] + ['Win_amount'] + ['Has_doubled']   
+
+    def write_to_csv(data, filename):
+        df = pd.DataFrame(data, columns=headers)
+        Path(filename).unlink(missing_ok=True)
+
+        directory = os.path.dirname(filename)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        df.to_csv(filename, sep='\t', encoding='utf-8', index=False, header=True)
+
+    def write_to_file(data, filename):
+        df = pd.DataFrame(data, columns=headers)
+        df = df.replace(np.nan, '')
+
+        Path(filename).unlink(missing_ok=True)
+
+        directory = os.path.dirname(filename)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+    
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(df.to_string(index=False))  
+
+    data = []
+    file_count = 1
 
     for iter in range(1, num_hands+1):
         game = BlackjackChallenge()
@@ -248,10 +272,50 @@ if __name__ == "__main__":
         game.dealer_play()
         game.win()
 
-        amount_won_hand = sum(hand.amount_won for hand in game.player_hands)
-        amount_bet_hand = sum(hand.wagered_amount for hand in game.player_hands)
+        if game.dealer_hand.is_hand_blackjack:
+            dealer_value = 'BLACKJACK'
+        elif game.dealer_hand.is_hand_busted:
+            dealer_value = 'BUST'
+        else:
+            dealer_value = game.dealer_hand.hand_value
 
-        amount_won += amount_won_hand
-        amount_bet += amount_bet_hand
+        new_row = {
+            'Hand': iter,
+            'Dealer_hand': game.dealer_hand,
+            'Dealer_value': dealer_value,
+            'Bet_amount': sum(hand.wagered_amount for hand in game.player_hands),
+            'Win_amount': sum(hand.amount_won for hand in game.player_hands),
+            'Has_doubled': any(hand.has_doubled for hand in game.player_hands)
+        }
 
-    print(num_hands, ' ', amount_bet, ' ', amount_won, ' ', amount_won/num_hands)
+        for i in range(len(game.player_hands)):
+            new_row['Hand_%s' % str(i+1)] = game.player_hands[i]
+            if game.player_hands[i].is_hand_blackjack:
+                new_row['Hand_value_%s' % str(i+1)] = 'BLACKJACK'
+            elif game.player_hands[i].is_hand_busted:
+                new_row['Hand_value_%s' % str(i+1)] = 'BUST'
+            elif game.player_hands[i].is_five_card_charlie:
+                new_row['Hand_value_%s' % str(i+1)] = '5CC'
+            else:
+                new_row['Hand_value_%s' % str(i+1)] = game.player_hands[i].hand_value
+    
+        data.append(new_row)
+
+        amount_bet += sum(hand.wagered_amount for hand in game.player_hands)
+        amount_won += sum(hand.amount_won for hand in game.player_hands)
+
+        if iter % 100000 == 0:
+            print('Hand', iter, 'Current house edge: ', amount_won/iter)
+            filename = f'.\\Blackjack Challenge Results\\results_bb1_{file_count}.txt'
+            filename_csv = f'.\\Blackjack Challenge Results\\results_bb1_{file_count}.csv'
+            write_to_file(data, filename)
+            write_to_csv(data, filename_csv)
+            file_count += 1
+            data = []
+            
+
+    if data:
+        filename = f'.\\Blackjack Challenge Results\\results_bb1_{file_count}.txt'
+        write_to_file(data, filename)    
+
+    print('Hand', num_hands, 'House edge: ', amount_won/num_hands)
