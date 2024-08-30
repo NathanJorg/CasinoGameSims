@@ -14,11 +14,11 @@ class Card:
     def get_suit(self):
         return self.suit
 
-    def card_value(self, has_player_doubled=False):
+    def card_value(self):
         if self.rank in ['J', 'Q', 'K']:
             return 10
         elif self.rank == 'A':
-            return 1 if has_player_doubled else 11     # In Spansish Blackjack, an Ace always counts as 1 after doubling
+            return 11
         else:
             return int(self.rank)
     

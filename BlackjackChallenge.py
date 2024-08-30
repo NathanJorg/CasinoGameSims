@@ -1,29 +1,25 @@
-from Cards import Deck
-from BlackjackHand import BlackjackChallengeHand
+from Blackjack import Blackjack
+from BlackjackHand import BlackjackChallengeHand as bch
 from WriteToFile import WriteToFile as wtf
 
-import logging
 
-class BlackjackChallenge():
+class BlackjackChallenge(Blackjack):
 
-    def __init__(self, num_decks=8, max_hands=3) -> None: 
-        self.deck = Deck(num_decks)
-        self.deck.shuffle()
+    def __init__(self, num_decks=6) -> None: 
+        super().__init__(num_decks)
         
-        self.max_hands = max_hands
+        self.player_hands = [bch(self.draw_card(number_of_cards=2))]
+        self.dealer_hand = bch(self.draw_card(number_of_cards=2))
 
-        self.player_hands = [BlackjackChallengeHand(self.draw_card(number_of_cards=2))]
-        self.dealer_hand = BlackjackChallengeHand(self.draw_card(number_of_cards=2))
+    def split_player_hand(self, hand: bch) -> None:
+        new_hand = bch([hand.hand.pop()])
+        hand.add_card(self.draw_card())
+        new_hand.add_card(self.draw_card())
+        hand.mark_split()
+        new_hand.mark_split()
+        self.player_hands.append(new_hand)
 
-    def draw_card(self, number_of_cards=1):
-        cards = [self.deck.draw_card() for _ in range(number_of_cards)]
-        return cards if number_of_cards > 1 else cards[0]
-      
-    @property
-    def dealer_first_card_rank(self):
-        return self.dealer_hand.card_ranks[0]
-    
-    def blackjack_pays(self, hand: BlackjackChallengeHand):
+    def blackjack_pays(self, hand: bch):
         if not self.dealer_hand.is_hand_blackjack:
             return 2.0
         if hand.blackjack_rank < self.dealer_hand.blackjack_rank:
@@ -32,19 +28,27 @@ class BlackjackChallenge():
             return 4.0
         if hand.blackjack_rank > self.dealer_hand.blackjack_rank:
             return 5.0 
+        
+    def player_wins(self, hand: bch):
+        if hand.is_hand_busted:
+            return False
+        elif hand.is_five_card_charlie:
+            return True
+        elif hand.hand_value == 21:
+            return True
+        elif self.dealer_hand.is_hand_busted:
+            return True
+        elif hand.hand_value > self.dealer_hand.hand_value:
+            return True     
+        
+        return False
  
-    def calculate_payout(self, hand: BlackjackChallengeHand):
+    def calculate_payout(self, hand: bch):
         if hand.is_hand_busted:
             return -1.0
         elif hand.is_hand_blackjack:
             return self.blackjack_pays(hand)
-        elif hand.is_five_card_charlie:
-            return 1.0
-        elif hand.hand_value == 21:
-            return 1.0
-        elif self.dealer_hand.is_hand_busted:
-            return 1.0
-        elif hand.hand_value > self.dealer_hand.hand_value:
+        elif self.player_wins(hand):
             return 1.0
         
         # all other hands lose
@@ -54,7 +58,7 @@ class BlackjackChallenge():
         while self.dealer_hand.hand_value < 17:
             self.dealer_hand.add_card(self.draw_card())
 
-    def does_player_split(self, hand: BlackjackChallengeHand):
+    def does_player_split(self, hand: bch):
         if not hand.can_split:
             return False
         
@@ -79,7 +83,7 @@ class BlackjackChallenge():
         
         return False
     
-    def does_player_double(self, hand: BlackjackChallengeHand):
+    def does_player_double(self, hand: bch):
         if len(hand.hand) == 2 and hand.is_hand_soft:
             if hand.hand_value == 16 and self.dealer_first_card_rank in [5, 6]:
                 return True
@@ -104,7 +108,7 @@ class BlackjackChallenge():
 
         return False
     
-    def does_player_stand(self, hand: BlackjackChallengeHand):
+    def does_player_stand(self, hand: bch):
         if len(hand.hand) == 2 and hand.is_hand_soft:
             if hand.hand_value == 18 and self.dealer_first_card_rank in [7, 8]:
                 return True
@@ -154,37 +158,8 @@ class BlackjackChallenge():
             return True
         
         return False
-            
-    def split_player_hand(self, hand: BlackjackChallengeHand) -> None:
-        new_hand = BlackjackChallengeHand([hand.hand.pop()])
-        hand.add_card(self.draw_card())
-        new_hand.add_card(self.draw_card())
-        self.player_hands.append(new_hand)
-    
-    def double_down(self, hand: BlackjackChallengeHand):
-        hand.wagered_amount *= 2
-        hand.mark_doubled()
-        hand.add_card(self.draw_card())
-    
-    def optimal_strategy(self, hand: BlackjackChallengeHand):
-        while True:
-            if self.does_player_split(hand) and len(self.player_hands) < self.max_hands:
-                self.split_player_hand(hand)
-            elif self.does_player_double(hand):
-                self.double_down(hand)
-                break
-            elif self.does_player_stand(hand):
-                break
-            else:
-                hand.add_card(self.draw_card())  
-
-    def play(self):
-        hand_index = 0
-        while hand_index < len(self.player_hands):
-            self.optimal_strategy(self.player_hands[hand_index])
-            hand_index += 1
-        
-    def is_hand_auto_resolved(self, hand: BlackjackChallengeHand):
+                    
+    def is_hand_auto_resolved(self, hand: bch):
         if hand.is_hand_blackjack:
             return True
         if hand.is_five_card_charlie:
@@ -211,19 +186,9 @@ class BlackjackChallenge():
             else:
                 self.set_hand_winnings(hand)
 
-    def set_hand_winnings(self, hand: BlackjackChallengeHand):
+    def set_hand_winnings(self, hand: bch):
         hand.amount_won = hand.wagered_amount * self.calculate_payout(hand)
 
-    # def handle_blackjack_unresolved(self, hand: BlackjackChallengeHand, unresolved_amount):
-
-    #     if unresolved_amount > hand.wagered_amount:
-    #         unresolved_amount -= hand.wagered_amount
-    #     else:
-    #         if hand.has_doubled:
-    #             hand.wagered_amount = 1.0
-    #         self.set_hand_winnings(hand)
-
-    #     return unresolved_amount
 
 if __name__ == "__main__":
 
