@@ -7,13 +7,14 @@ class BlackjackHand:
         self.wagered_amount = 1.0
         self.amount_won = 0.0
         self._has_doubled = False
+        self._has_split = False
         self.update_hand_value()
 
     def __str__(self):
-        hand_string = ",".join(map(str, self.hand))
+        hand_string = ", ".join(map(str, self.hand))
         return hand_string    
     
-    def add_card(self, card):
+    def add_card(self, card) -> None:
         if isinstance(card, list):
             self.hand.extend(card)
         else:
@@ -21,7 +22,7 @@ class BlackjackHand:
 
         self.update_hand_value()
 
-    def update_hand_value(self):
+    def update_hand_value(self) -> None:
         value = sum(card.card_value() for card in self.hand)
 
         num_aces = sum(1 for card in self.hand if card.rank == 'A')
@@ -32,8 +33,11 @@ class BlackjackHand:
         self._num_aces_left = num_aces
         self._hand_value = value
 
-    def mark_doubled(self):
+    def mark_doubled(self) -> None:
         self._has_doubled = True
+
+    def mark_split(self) -> None:
+        self._has_split = True
         
     @property
     def hand_value(self):
@@ -45,32 +49,11 @@ class BlackjackHand:
     
     @property 
     def is_hand_blackjack(self):
-        return self._hand_value == 21 and len(self.hand) == 2
+        return self._hand_value == 21 and len(self.hand) == 2 and not self.has_split
     
     @property
     def is_hand_busted(self):
         return self._hand_value > 21
-    
-    @property
-    def is_five_card_charlie(self):
-        return len(self.hand) == 5 and not self.is_hand_busted
-
-    @property
-    def blackjack_rank(self):
-        if not self.is_hand_blackjack:
-            return None
-        
-        # Assign rank based on the 10-value card
-        rank_values = {
-            '10': 1, 'J': 2, 'Q': 3, 'K': 4
-        }
-
-        # Identify the 10-value card in the hand
-        for card in self.hand:
-            if card.rank in rank_values:
-                return rank_values[card.rank]
-            
-        return None
     
     @property
     def card_ranks(self):
@@ -83,3 +66,32 @@ class BlackjackHand:
     @property
     def has_doubled(self):
         return self._has_doubled
+
+    @property
+    def has_split(self):
+        return self._has_split
+
+
+class BlackjackChallengeHand(BlackjackHand):
+    @property
+    def is_five_card_charlie(self):
+        return len(self.hand) == 5 and not self.is_hand_busted
+    
+    @property 
+    def is_hand_blackjack(self):
+        return self._hand_value == 21 and len(self.hand) == 2 
+
+    @property
+    def blackjack_rank(self):
+        if not self.is_hand_blackjack:
+            return None
+        
+        rank_values = {
+            '10': 1, 'J': 2, 'Q': 3, 'K': 4
+        }
+
+        for card in self.hand:
+            if card.rank in rank_values:
+                return rank_values[card.rank]
+            
+        return None
