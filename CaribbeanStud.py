@@ -74,19 +74,18 @@ class CarribeanStud:
 
     def amount_won(self):
         if self.does_player_fold():
-            return 0.0
+            return -1.0
         
         if not self.does_dealer_qualify():
-            return 2 * self.ante + self.raise_bet
+            return self.ante
         
         if self.does_player_win():
-            return 2 * self.ante + self.raise_bet * self.raise_pay_table[self.player_hand.hand_rank] + self.raise_bet
+            return self.ante + self.raise_bet * self.raise_pay_table[self.player_hand.hand_rank]
         
         if self.does_player_tie():
-            print("tie")
-            return self.ante + self.raise_bet
+            return 0.0
     
-        return 0.0
+        return -1.0 * (self.ante + self.raise_bet)
         
     def game_results(self):
         # return amount_bet, amount_won
@@ -114,10 +113,10 @@ if __name__ == "__main__":
         amount_won += amount_won_game
         
         if iter % 100000 == 0:
-            print(iter, ' ', amount_bet, ' ', amount_won, ' ', 1-amount_won/amount_bet, (amount_bet-amount_won)/iter)
+            print(iter, ' ', amount_bet, ' ', amount_won, ' ', amount_won/amount_bet, amount_won/iter)
         #print(game.dealer_hand, ' ', game.player_hand, ' ', game.amount_bet(), ' ', game.amount_won())
        
 
     
 
-    print(num_hands, ' ', amount_bet, ' ', amount_won, ' ', 1-amount_won/amount_bet, (amount_bet-amount_won)/num_hands)
+    print(num_hands, ' ', amount_bet, ' ', amount_won, ' ', amount_won/amount_bet, amount_won/num_hands)
