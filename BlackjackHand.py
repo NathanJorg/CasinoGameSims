@@ -112,29 +112,59 @@ class SpBlackjackHand(BlackjackHand):
         self.update_hand_value()
         self.update_suits()
 
+    def update_hand_value(self) -> None:
+        if not self.has_doubled:
+            value = sum(card.card_value() for card in self.hand)
+            num_aces = sum(1 for card in self.hand if card.rank == 'A')
+        else:
+            value = sum(card.card_value(has_doubled=True) for card in self.hand[:-1]) + self.hand[-1].card_value()
+            num_aces = 1 if self.hand[-1].rank == 'A' else 0
+
+        while value > 21 and num_aces:
+            value -= 10
+            num_aces -= 1
+
+        self._num_aces_left = num_aces
+        self._hand_value = value
+
     def mark_surrendered(self) -> None:
         self._has_surrendered = True
+
+    def mark_doubled(self) -> None:    
+        self._has_doubled = True
+        self.update_hand_value()
 
     def update_suits(self):
         suits = [card.suit for card in self.hand]
 
-        if len(set(suits)) == 1 and suits[0] == "\u2660": 
+        if len(set(suits)) == 1 and suits[0] == "\u2660":   # spade
             self._spades = True
+            self._suited = False
+            self._mixed = False
         elif len(set(suits)) == 1:
+            self._spades = False
             self._suited = True
+            self._mixed = False
         else: 
-            self._mixed = True
+            self._spades = False
+            self._suited = False
+            self._mixed = True   
+            
 
     @property
     def triple_seven(self):
         sevens_count = sum(1 for card in self.hand if card.rank == '7')
-        return sevens_count and len(self.hand) == 3 and not self.has_doubled
+        return sevens_count == 3 and len(self.hand) == 3 and not self.has_doubled
 
     @property
     def six_seven_eight(self):
         required_ranks = {'6', '7', '8'}
         hand_ranks = {card.rank for card in self.hand}
         return hand_ranks == required_ranks and not self.has_doubled
+    
+    @property
+    def is_drawing_to_six_seven_eight(self):
+       return set(self.card_ranks).issubset({6, 7, 8}) and len(set(self.card_ranks)) == 2
 
     @property
     def five_card_21(self):

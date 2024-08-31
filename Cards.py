@@ -14,11 +14,11 @@ class Card:
     def get_suit(self):
         return self.suit
 
-    def card_value(self):
+    def card_value(self, has_doubled=False):
         if self.rank in ['J', 'Q', 'K']:
             return 10
         elif self.rank == 'A':
-            return 11
+            return 1 if has_doubled else 11
         else:
             return int(self.rank)
     
@@ -29,7 +29,7 @@ class Deck():
     diamond = "\u2666"
     spade = "\u2660"
 
-    suits = [club, heart, diamond, spade] 
+    suits = ["\u2663", "\u2665", "\u2666", "\u2660"] 
     ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] 
 
     def __init__(self, num_decks=1):
