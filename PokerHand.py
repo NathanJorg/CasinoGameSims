@@ -110,19 +110,19 @@ class PokerHand:
         return hand_str
     
     def find_best_hand(self):
-        _best_hand = None
-        _best_rank_value = 0
+        best_hand = None
+        best_rank_value = 0
 
         for combo in combinations(self.hand, 5):
-            _current_hand = PokerHand(list(combo))
-            if _current_hand.hand_rank_value > _best_rank_value:
-                _best_hand = _current_hand
-                _best_rank_value = _current_hand.hand_rank_value
-            elif _current_hand.hand_rank_value == _best_rank_value:
-                if _current_hand.ranks > _best_hand.ranks:
-                    _best_hand = _current_hand
+            current_hand = PokerHand(list(combo))
+            if current_hand.hand_rank_value > best_rank_value:
+                best_hand = current_hand
+                best_rank_value = current_hand.hand_rank_value
+            elif current_hand.hand_rank_value == best_rank_value:
+                if current_hand.ranks > best_hand.ranks:
+                    best_hand = current_hand
 
-        return _best_hand
+        return best_hand
 
 
 class ThreeCardHand(PokerHand):
@@ -163,6 +163,5 @@ class ThreeCardHand(PokerHand):
             return "Flush"
         if self.is_one_pair():
             return "One Pair"
-        
         return "High Card"
     
