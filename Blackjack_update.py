@@ -128,8 +128,8 @@ class Blackjack():
     
     def double_down(self, hand: BlackjackHand) -> None:
         hand.wagered_amount *= 2
-        hand.add_card(self.draw_card())
         hand.mark_doubled()
+        hand.add_card(self.draw_card())
 
     def optimal_strategy(self, hand: BlackjackHand) -> None:
         while True:
