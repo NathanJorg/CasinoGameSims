@@ -95,12 +95,9 @@ class CarribeanStud:
 if __name__ == "__main__":
 
     num_hands = 2000000
-
     amount_bet = 0
-
     amount_won = 0
-
-
+    
     data = []
     file_count = 1
 
@@ -114,9 +111,5 @@ if __name__ == "__main__":
         
         if iter % 100000 == 0:
             print(iter, ' ', amount_bet, ' ', amount_won, ' ', amount_won/amount_bet, amount_won/iter)
-        #print(game.dealer_hand, ' ', game.player_hand, ' ', game.amount_bet(), ' ', game.amount_won())
-       
-
-    
 
     print(num_hands, ' ', amount_bet, ' ', amount_won, ' ', amount_won/amount_bet, amount_won/num_hands)
