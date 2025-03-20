@@ -60,12 +60,12 @@ class LuckyDrawHand(BaccaratHand):
     def is_suited(self):
         return self._is_suited
     
-    @property
-    def is_triple_three(self):
-        return self._is_suited
+    # @property
+    # def is_triple_three(self):
+    #     return self._is_suited
     
     @property
-    def triple_three(self):
+    def is_triple_three(self):
         threes_count = sum(1 for card in self.hand if card.rank == '3')
         return threes_count == 3 and len(self.hand) == 3
     

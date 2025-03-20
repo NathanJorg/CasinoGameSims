@@ -29,7 +29,7 @@ class Deck():
     diamond = "\u2666"
     spade = "\u2660"
 
-    suits = ["\u2663", "\u2665", "\u2666", "\u2660"] 
+    suits = [club, heart, diamond, spade] 
     ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] 
 
     def __init__(self, num_decks=1):

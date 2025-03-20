@@ -22,10 +22,10 @@ class LuckyDrawBaccarat:
         return self.banker_hand.card_ranks[0] % 10
     
     def draw_bet_pay(self):
-        if self.player_hand.triple_three and self.player_hand.is_suited:
+        if self.player_hand.is_triple_three and self.player_hand.is_suited:
             # print('suited', self.player_hand)
             return 30.0
-        if self.player_hand.triple_three:
+        if self.player_hand.is_triple_three:
             # print('unsuited', self.player_hand)
             return 9.0
         if self.player_hand.hand_value == 9:
@@ -49,7 +49,7 @@ class LuckyDrawBaccarat:
             return -1.0 * (self.player_hand.enter_bet + self.player_hand.draw_bet)
 
     def player_draws(self):
-        if self.player_hand.drawing_to_triple_three_suited:
+        if self.player_hand.drawing_to_triple_three:
             return True
         if self.player_hand.hand_value in [0, 1, 2]:
             return True
@@ -82,21 +82,8 @@ if __name__ == "__main__":
     data = []
     file_count = 1
 
-
-    game = LuckyDrawBaccarat()
-
-    print(game.player_hand)
-    print(game.banker_first_card_rank)
-    print(game.banker_hand)
-
-    game.play()
-
-    print(game.player_hand, ' ', game.player_hand.hand_value)
-    print(game.banker_hand, ' ', game.banker_hand.hand_value)
-    print(game.player_hand.amount_won, ' ', game.player_hand.draw_bet + game.player_hand.enter_bet )
-
     for iter in range(1, num_hands+1):
-        game = LuckyDrawBaccarat()
+        game = LuckyDrawBaccarat(decks=6)
         game.play()
     
         amount_bet_game = game.player_hand.draw_bet + game.player_hand.enter_bet

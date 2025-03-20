@@ -150,7 +150,6 @@ class SpBlackjackHand(BlackjackHand):
             self._suited = False
             self._mixed = True   
             
-
     @property
     def triple_seven(self):
         sevens_count = sum(1 for card in self.hand if card.rank == '7')

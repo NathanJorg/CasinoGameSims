@@ -49,7 +49,7 @@ class Blackjack():
 
         return False
 
-    def player_ties(self, hand:BlackjackHand):
+    def player_ties(self, hand: BlackjackHand):
         return hand.hand_value == self.dealer_hand.hand_value
     
     def dealer_play(self) -> None:
@@ -162,7 +162,7 @@ class Blackjack():
 
 if __name__ == "__main__":
 
-    num_hands = 10000000
+    num_hands = 1000000
     amount_bet = 0
     amount_won = 0
 
@@ -215,17 +215,17 @@ if __name__ == "__main__":
 
         if iter % 200000 == 0:
             print('Hand', iter, 'Current house edge: ', amount_won/iter)
-            filename = f'.\\Blackjack Results\\results_bb1_{file_count}.txt'
-            filename_csv = f'.\\Blackjack Results\\results_bb1_{file_count}.csv'
-            wtf.write_to_file(data, filename, headers)
-            wtf.write_to_csv(data, filename_csv, headers)
-            file_count += 1
-            data = []
+            # filename = f'.\\Blackjack Results\\results_bb1_{file_count}.txt'
+            # filename_csv = f'.\\Blackjack Results\\results_bb1_{file_count}.csv'
+            # wtf.write_to_file(data, filename, headers)
+            # wtf.write_to_csv(data, filename_csv, headers)
+            # file_count += 1
+            # data = []
             
 
-    if data:
-        filename = f'.\\Blackjack Results\\results_bb1_{file_count}.txt'
-        wtf.write_to_file(data, filename, headers)  
-        wtf.write_to_csv(data, filename_csv, headers) 
+    # if data:
+        # filename = f'.\\Blackjack Results\\results_bb1_{file_count}.txt'
+        # wtf.write_to_file(data, filename, headers)  
+        # wtf.write_to_csv(data, filename_csv, headers) 
 
     print('Hand', num_hands, 'House edge: ', amount_won/num_hands)
