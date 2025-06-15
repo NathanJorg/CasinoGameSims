@@ -192,3 +192,11 @@ class SpBlackjackHand(BlackjackHand):
     @property
     def has_surrendered(self):
         return self._has_surrendered
+
+class BlackjackSwitchHand(BlackjackHand):
+    @property
+    def first_card_rank(self):
+        return self.hand[0].rank
+    @property
+    def second_card_rank(self):
+        return self.hand[1].rank
