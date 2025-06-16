@@ -97,7 +97,6 @@ class BlackjackChallengeHand(BlackjackHand):
         return None
     
 class SpBlackjackHand(BlackjackHand):
-    
     def __init__(self, hand: list[Card] = None) -> None: 
         super().__init__(hand)
         self._has_surrendered = False
@@ -195,8 +194,26 @@ class SpBlackjackHand(BlackjackHand):
 
 class BlackjackSwitchHand(BlackjackHand):
     @property
-    def first_card_rank(self):
-        return self.hand[0].rank
+    def first_card_value(self):
+        return self.card_ranks[0]
+    
     @property
-    def second_card_rank(self):
-        return self.hand[1].rank
+    def second_card_value(self):
+        return self.card_ranks[1]
+    
+    @property
+    def ace_second_card_value(self):
+        if self.first_card_value == 11:
+            return self.second_card_value
+        if self.second_card_value == 11:
+            return self.first_card_value
+        return None
+    
+class BlackjackSwitchDealerHand(BlackjackHand):
+    @property
+    def is_hand_busted(self):
+        return self._hand_value > 22
+    
+    @property
+    def is_dealer_twentytwo(self):
+        return self._hand_value == 22

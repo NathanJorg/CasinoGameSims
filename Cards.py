@@ -45,8 +45,7 @@ class Deck():
         return self.cards.pop() if self.cards else None
     
     def count(self):
-        return len(self.cards)
-    
+        return len(self.cards)   
     
 class SpanishDeck(Deck):
     ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'J', 'Q', 'K'] 
