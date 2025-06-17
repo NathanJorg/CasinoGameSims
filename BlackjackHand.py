@@ -162,7 +162,7 @@ class SpBlackjackHand(BlackjackHand):
     
     @property
     def is_drawing_to_six_seven_eight(self):
-       return set(self.card_ranks).issubset({6, 7, 8}) and len(set(self.card_ranks)) == 2
+       return set(self.card_ranks).issubset({6, 7, 8}) and len(set(self.card_ranks)) == 2 and len(self.hand) == 2
 
     @property
     def five_card_21(self):
@@ -210,10 +210,6 @@ class BlackjackSwitchHand(BlackjackHand):
         return None
     
 class BlackjackSwitchDealerHand(BlackjackHand):
-    @property
-    def is_hand_busted(self):
-        return self._hand_value > 22
-    
     @property
     def is_dealer_twentytwo(self):
         return self._hand_value == 22
