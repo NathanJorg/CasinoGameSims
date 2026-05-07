@@ -9,6 +9,7 @@ class WriteToFile:
     @staticmethod
     def write_to_csv(data, filename, headers):
         df = pd.DataFrame(data, columns=headers)
+        df = df.fillna(0)
         Path(filename).unlink(missing_ok=True)
 
         directory = os.path.dirname(filename)

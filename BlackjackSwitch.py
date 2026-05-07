@@ -65,6 +65,9 @@ class BlackjackSwitch():
             return 4
         if [hand.hand[0].rank, hand.hand[1].rank] == ['8', '8'] and 2 <= self.dealer_first_card_value <= 8:
             return 3.5
+        return 0
+    
+    def evaluate_hand_second_check(self, hand: BlackjackSwitchHand):
         if hand.hand_value == 17 or hand.hand_value == 7:
             return 3
         if self.does_player_split(hand):
