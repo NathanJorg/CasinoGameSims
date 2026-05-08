@@ -23,10 +23,8 @@ class LuckyDrawBaccarat:
     
     def draw_bet_pay(self):
         if self.player_hand.is_triple_three and self.player_hand.is_suited:
-            # print('suited', self.player_hand)
             return 30.0
         if self.player_hand.is_triple_three:
-            # print('unsuited', self.player_hand)
             return 9.0
         if self.player_hand.hand_value == 9:
             return 3.0
@@ -93,7 +91,7 @@ if __name__ == "__main__":
         amount_won += amount_won_game
         
         if iter % 500000 == 0:
-            print(iter, ' ', amount_bet, ' ', amount_won, ' ', amount_won/amount_bet, amount_won/iter)
+            print(f'{iter}  {amount_bet}  {amount_won}  {amount_won/amount_bet:.6f}  {amount_won/iter:.6f}')
 
-    print(num_hands, ' ', amount_bet, ' ', amount_won, ' ', amount_won/amount_bet, amount_won/num_hands)
+    print(f'{num_hands}  {amount_bet}  {amount_won}  {amount_won/amount_bet:.6f}  {amount_won/num_hands:.6f}')
     

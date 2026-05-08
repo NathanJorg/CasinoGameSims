@@ -134,7 +134,7 @@ def main():
             'Player hand': game.player_hand,
             'Dealer hand': game.dealer_hand,
             'Player rank': game.player_hand.hand_rank,
-            'Dealer rank': None if not game.dealer_qualifies() else game.dealer_hand.hand_rank,
+            'Dealer rank': game.dealer_hand.hand_rank if game.dealer_qualifies() else None,
             'Player hand rank': game.player_hand.hand_rank_value,
             'Dealer hand rank': game.dealer_hand.hand_rank_value,
             'Amount bet': amount_bet_game,

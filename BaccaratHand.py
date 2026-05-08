@@ -4,8 +4,7 @@ class BaccaratHand:
     def __init__(self, hand: list[Card]=None) -> None: 
         self.hand = hand if hand else []
         self.bet_unit = 1.0
-        self.enter_bet = self.bet_unit
-        self.draw_bet = 0.0
+        self.enter_bet = self.bet_unit 
         self.amount_won = 0.0
         self.update_hand_value()
 
@@ -41,6 +40,7 @@ class BaccaratHand:
 class LuckyDrawHand(BaccaratHand):
     def __init__(self, hand: list[Card] = None) -> None:
         super().__init__(hand)
+        self.draw_bet = 0.0
         self.update_suits()
 
     def add_card(self, card) -> None:

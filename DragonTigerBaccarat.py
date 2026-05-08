@@ -19,13 +19,13 @@ DRAGON_TIE_PAYS = 42
 def hand_value(hand: BaccaratHand):
         return hand.hand_value
     
-def number_of_cards(hand:BaccaratHand):
+def number_of_cards(hand: BaccaratHand):
         return len(hand.card_ranks)
 
 def main(verbose=False):
 
     num_decks = [6, 8]
-    num_hands = 1000000
+    num_hands = 100000000
 
     for deck in num_decks:
 
