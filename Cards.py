@@ -22,7 +22,6 @@ class Card:
         else:
             return int(self.rank)
     
-
 class Deck():
     club = "\u2663"
     heart = "\u2665"

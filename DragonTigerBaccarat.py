@@ -162,4 +162,4 @@ def main(verbose=False):
             wtf.write_to_csv(results, filename_csv, header) 
 
 if __name__ == "__main__":
-    main(verbose=False)
+    main(verbose=True)

@@ -7,9 +7,9 @@ from pathlib import Path
 class WriteToFile:
 
     @staticmethod
-    def write_to_csv(data, filename, headers):
+    def write_to_csv(data, filename, headers, empty_fields=''):
         df = pd.DataFrame(data, columns=headers)
-        df = df.fillna(0)
+        df = df.fillna(empty_fields)
         Path(filename).unlink(missing_ok=True)
 
         directory = os.path.dirname(filename)
@@ -19,9 +19,9 @@ class WriteToFile:
         df.to_csv(filename, sep='\t', encoding='utf-8', index=False, header=True)
 
     @staticmethod
-    def write_to_file(data, filename, headers):
+    def write_to_file(data, filename, headers, empty_fields=''):
         df = pd.DataFrame(data, columns=headers)
-        df = df.replace(np.nan, '')
+        df = df.replace(np.nan, empty_fields)
 
         Path(filename).unlink(missing_ok=True)
 

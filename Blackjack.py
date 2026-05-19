@@ -152,7 +152,7 @@ class Blackjack():
     def win(self):
         for hand in self.player_hands:
             if self.dealer_hand.is_hand_blackjack and not hand.is_hand_blackjack:
-                hand.amount_won = -1.0      # dealer takes original bet only, any additional a=hands through splitting will be skipped
+                hand.amount_won = -1.0      # dealer takes original bet only, any additional hands through splitting will be skipped
                 break                   
             else:
                 self.set_hand_winnings(hand)
@@ -162,7 +162,7 @@ class Blackjack():
 
 if __name__ == "__main__":
 
-    num_hands = 1000000
+    num_hands = 2000000
     amount_bet = 0
     amount_won = 0
 
@@ -214,18 +214,18 @@ if __name__ == "__main__":
         amount_won += sum(hand.amount_won for hand in game.player_hands)
 
         if iter % 200000 == 0:
-            print('Hand', iter, 'Current house edge: ', amount_won/iter)
-            # filename = f'.\\Blackjack Results\\results_bb1_{file_count}.txt'
-            # filename_csv = f'.\\Blackjack Results\\results_bb1_{file_count}.csv'
-            # wtf.write_to_file(data, filename, headers)
-            # wtf.write_to_csv(data, filename_csv, headers)
-            # file_count += 1
-            # data = []
+            print(f'Hand: {iter}  Current house edge: {amount_won/iter:.6f}')
+            filename = f'.\\Blackjack Results\\results_bb1_{file_count}.txt'
+            filename_csv = f'.\\Blackjack Results\\results_bb1_{file_count}.csv'
+            wtf.write_to_file(data, filename, headers)
+            wtf.write_to_csv(data, filename_csv, headers)
+            file_count += 1
+            data = []
             
 
-    # if data:
-        # filename = f'.\\Blackjack Results\\results_bb1_{file_count}.txt'
-        # wtf.write_to_file(data, filename, headers)  
-        # wtf.write_to_csv(data, filename_csv, headers) 
+    if data:
+        filename = f'.\\Blackjack Results\\results_bb1_{file_count}.txt'
+        wtf.write_to_file(data, filename, headers)  
+        wtf.write_to_csv(data, filename_csv, headers) 
 
-    print('Hand', num_hands, 'House edge: ', amount_won/num_hands)
+    print(f'Hand: {int(num_hands)}  House edge: {amount_won/num_hands:.6f}')
