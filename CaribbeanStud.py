@@ -1,6 +1,8 @@
 from PokerHand import PokerHand
 from Cards import Deck
 
+from WriteToFile import WriteToFile as wtf
+
 class CarribeanStud:
 
     raise_pay_table = {
@@ -101,6 +103,17 @@ if __name__ == "__main__":
     data = []
     file_count = 1
 
+    data_headers = [ 
+        'Hand', 
+        'Player Hand',
+        'Dealer Hand',
+        'Player Rank',
+        'Dealer Rank',
+        'Amount Bet',
+        'Amount Won'
+    ]
+    data_raw = []
+
     for iter in range(1, num_hands+1):
         game = CarribeanStud()
     
@@ -108,8 +121,35 @@ if __name__ == "__main__":
 
         amount_bet += amount_bet_game
         amount_won += amount_won_game
+
+        new_row = {
+            'Hand': iter,
+            'Player Hand': game.player_hand,
+            'Dealer Hand': game.dealer_hand,
+            'Player Rank': game.player_hand.hand_rank,
+            'Dealer Rank': game.dealer_hand.hand_rank if game.does_dealer_qualify() else None,
+            # 'Player hand rank': game.player_hand.hand_rank_value,
+            # 'Dealer hand rank': game.dealer_hand.hand_rank_value,
+            'Amount Bet': amount_bet_game,
+            'Amount Won': amount_won_game
+        }
+
+        data_raw.append(new_row)
         
         if iter % 100000 == 0:
-            print(iter, ' ', amount_bet, ' ', amount_won, ' ', amount_won/amount_bet, amount_won/iter)
+            filename_raw = f'.\\Caribbean Stud Results\\three_card_{file_count}.txt'
+            filename_csv = f'.\\Caribbean Stud Results\\three_card_csv_{file_count}.csv'
+            wtf.write_to_file(data_raw, filename_raw, data_headers)
+            wtf.write_to_csv(data_raw, filename_csv, data_headers, empty_fields=None)
+            file_count += 1
+            data_raw = []
 
-    print(num_hands, ' ', amount_bet, ' ', amount_won, ' ', amount_won/amount_bet, amount_won/num_hands)
+            print(f'{iter}  {amount_bet}  {amount_won}  {amount_won/amount_bet:.6f}  {amount_won/iter:.6f}')
+    
+    if data_raw:
+        filename_raw = f'.\\Three Card Results\\three_card_{file_count}.txt'
+        filename_csv = f'.\\Three Card Results\\three_card_csv_{file_count}.csv'
+        wtf.write_to_file(data_raw, filename_raw, data_headers)    
+        wtf.write_to_csv(data_raw, filename_csv, data_headers)
+
+    print(f'{num_hands}  {amount_bet}  {amount_won}  {amount_won/amount_bet:.6f}  {amount_won/num_hands:.6f}')
